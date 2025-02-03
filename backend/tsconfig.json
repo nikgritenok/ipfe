@@ -7,8 +7,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    //"types": ["vitest/globals"],
-    "typeRoots": ["node_modules/@types", "../node_modules/@types"]
+    "types": ["vitest/globals"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }

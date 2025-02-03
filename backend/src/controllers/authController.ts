@@ -3,12 +3,16 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/userModel'
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   const { firstName, lastName, login, password, role } = req.body
   try {
     const existingUser = await User.findOne({ login })
     if (existingUser) {
-      return res.status(400).json({ message: 'Пользователь уже существует' })
+      res.status(400).json({ message: 'Пользователь уже существует' })
+      return
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -26,6 +30,10 @@ export const registerUser = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ message: 'Ошибка при регистрации' })
   }
+}
+
+export const test = async (req: Request, res: Response) => {
+  res.status(200).json({ message: 'test' })
 }
 
 // export const loginUser = async (req: Request, res: Response) => {
