@@ -75,11 +75,16 @@ export const loginUser = async (req: Request, res: Response) => {
 }
 
 export const getUserData = async (req: Request, res: Response) => {
-  const user = await User.findById(req.body.userId)
-  if (!user) {
-    res.status(404).json({ message: 'User not found' })
-    return
+  const userId = (req as CustomRequest).userId
+  if (!userId) {
+    return res.status(401).json({ message: 'Не авторизован' })
   }
+
+  const user = await User.findById(userId)
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' })
+  }
+
   res.status(200).json({
     firstName: user.firstName,
     lastName: user.lastName,
