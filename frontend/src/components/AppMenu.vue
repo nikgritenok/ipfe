@@ -35,7 +35,7 @@ const items = ref<IMenuItem[]>([
       <template #start>
         <svg
           width="80"
-          height="80"
+          height="40"
           version="1.1"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="-2175.5490227034993 -1510.2720825195313 4609.597197752327 2280.1921142578126"
