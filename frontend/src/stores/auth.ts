@@ -6,8 +6,13 @@ import { useRouter } from 'vue-router'
 export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false)
   const token = ref(localStorage.getItem('jwt') || '')
-  const role = ref('')
   const router = useRouter()
+  const user = ref({
+    firstName: '',
+    lastName: '',
+    login: '',
+    role: '',
+  })
 
   async function register(
     firstName: string,
@@ -29,8 +34,9 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = response.data.token
         localStorage.setItem('jwt', response.data.token)
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+        console.log('Authorization header:', axios.defaults.headers.common['Authorization'])
         isLoggedIn.value = true
-        router.push('/') // Перенаправление на главную страницу
+        router.push('/')
       }
 
       console.log(response)
@@ -51,10 +57,24 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.setItem('jwt', response.data.token)
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
         isLoggedIn.value = true
-        router.push('/') // Перенаправление на главную страницу
+        router.push('/')
       }
     } catch (error) {
       console.error('Ошибка авторизации:', error)
+    }
+  }
+
+  async function getUserData() {
+    try {
+      const token = localStorage.getItem('jwt')
+      const response = await axios.get('http://localhost:5001/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      user.value = response.data
+    } catch (error) {
+      console.error('Ошибка получения данных пользователя:', error)
     }
   }
 
@@ -66,5 +86,5 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/login')
   }
 
-  return { isLoggedIn, token, register, loginUser, logout }
+  return { isLoggedIn, token, register, loginUser, logout, getUserData, user }
 })

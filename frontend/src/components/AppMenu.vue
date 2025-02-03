@@ -9,14 +9,22 @@ const logout = () => {
   authStore.logout()
 }
 
-const items = ref([
+interface IMenuItem {
+  label: string
+  icon: string
+  path: string
+}
+
+const items = ref<IMenuItem[]>([
   {
     label: 'Домой',
     icon: 'pi pi-home',
+    path: '/',
   },
   {
     label: 'Профиль',
     icon: 'pi pi-user',
+    path: '/profile',
   },
 ])
 </script>
@@ -24,6 +32,12 @@ const items = ref([
 <template>
   <div class="card">
     <app-menu :model="items">
+      <template #item="{ item, props }">
+        <router-link class="flex align-items-center" :to="item.path" v-bind="props.action">
+          <span :class="item.icon" class="p-menuitem-icon"></span>
+          <span>{{ item.label }}</span>
+        </router-link>
+      </template>
       <template #end>
         <div @click="logout" class="flex align-items-center menu-exit custom-end-item">
           <span class="pi pi-sign-out p-menuitem-icon"></span>

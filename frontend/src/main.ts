@@ -15,6 +15,7 @@ import Checkbox from 'primevue/checkbox'
 import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
 import Menubar from 'primevue/menubar'
+import Card from 'primevue/card'
 
 const app = createApp(App)
 app.use(PrimeVue, {
@@ -31,5 +32,6 @@ app.component('app-checkbox', Checkbox)
 app.component('app-input', InputText)
 app.component('app-select', SelectButton)
 app.component('app-menu', Menubar)
+app.component('app-card', Card)
 
 app.mount('#app')

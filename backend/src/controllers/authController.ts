@@ -84,24 +84,30 @@ export const loginUser = async (req: Request, res: Response) => {
 }
 
 export const getUserData = async (req: Request, res: Response) => {
-  const userId = (req as CustomRequest).userId
-  if (!userId) {
-    res.status(401).json({ message: 'Не авторизован' })
-    return
-  }
+  try {
+    const userId = (req as CustomRequest).userId
+    if (!userId) {
+      res.status(401).json({ message: 'Не авторизован' })
+      return
+    }
 
-  const user = await User.findById(userId)
-  if (!user) {
-    res.status(404).json({ message: 'User not found' })
-    return
-  }
+    const user = await User.findById(userId)
+    if (!user) {
+      res.status(404).json({ message: 'Пользователь не найден' })
+      return
+    }
 
-  res.status(200).json({
-    firstName: user.firstName,
-    lastName: user.lastName,
-    login: user.login,
-    role: user.role,
-  })
+    res.status(200).json({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      login: user.login,
+      role: user.role,
+    })
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Ошибка при получении данных пользователя' })
+  }
 }
 
 export const deleteUser = async (req: CustomRequest, res: Response) => {
