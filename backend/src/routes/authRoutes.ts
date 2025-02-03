@@ -1,12 +1,18 @@
 import express from 'express'
 import { Request, Response } from 'express'
-import { registerUser, test, loginUser } from '../controllers/authController'
+import {
+  registerUser,
+  test,
+  loginUser,
+  getUserData,
+} from '../controllers/authController'
 import authMiddleware from '../middlewares/authMiddleware'
 
 const router = express.Router()
 
 router.post('/register', registerUser)
 router.post('/login', loginUser)
+router.get('/me', authMiddleware, getUserData)
 router.get('/test', test)
 
 export default router

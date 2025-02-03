@@ -69,18 +69,19 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 }
 
-// export const getUserData = async (req: Request, res: Response) => {
-//   const user = await User.findById(req.userId)
-//   if (!user) {
-//     return res.status(404).json({ message: 'User not found' })
-//   }
-//   res.status(200).json({
-//     firstName: user.firstName,
-//     lastName: user.lastName,
-//     login: user.login,
-//     role: user.role,
-//   })
-// }
+export const getUserData = async (req: Request, res: Response) => {
+  const user = await User.findById(req.body.userId)
+  if (!user) {
+    res.status(404).json({ message: 'User not found' })
+    return
+  }
+  res.status(200).json({
+    firstName: user.firstName,
+    lastName: user.lastName,
+    login: user.login,
+    role: user.role,
+  })
+}
 
 // export const deleteUser = async (req: Request, res: Response) => {
 //   try {
