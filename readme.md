@@ -25,10 +25,10 @@
    yarn install
    ```
 
-3. Установите зависимости для frontend:
+3. Запустите backend:
+
    ```bash
-   cd frontend
-   yarn install
+   yarn dev
    ```
 
 ## Переменные окружения
