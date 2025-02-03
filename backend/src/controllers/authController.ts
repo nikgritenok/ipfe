@@ -40,7 +40,16 @@ export const registerUser = async (
     })
 
     await newUser.save()
-    res.status(201).json({ message: 'Пользователь успешно зарегистрирован' })
+
+    const token = jwt.sign(
+      { userId: newUser._id, role: newUser.role },
+      secret,
+      { expiresIn: '1h' },
+    )
+
+    res
+      .status(201)
+      .json({ message: 'Пользователь успешно зарегистрирован', token })
   } catch (error) {
     res.status(500).json({ message: 'Ошибка при регистрации' })
   }
