@@ -40,3 +40,51 @@ describe('GET /test', () => {
     expect(response.body.message).toBe('test')
   })
 })
+
+describe('POST /login', () => {
+  it('должен авторизовать пользователя и вернуть токен', async () => {
+    await request(app).post('/register').send({
+      firstName: 'John',
+      lastName: 'Doe',
+      login: 'johndoe',
+      password: 'password123',
+      role: 'student',
+    })
+
+    const response = await request(app).post('/login').send({
+      login: 'johndoe',
+      password: 'password123',
+    })
+
+    expect(response.status).toBe(200)
+    expect(response.body.token).toBeDefined()
+  })
+
+  it('должен вернуть ошибку при неправильном пароле', async () => {
+    await request(app).post('/register').send({
+      firstName: 'John',
+      lastName: 'Doe',
+      login: 'johndoe',
+      password: 'password123',
+      role: 'student',
+    })
+
+    const response = await request(app).post('/login').send({
+      login: 'johndoe',
+      password: 'wrongpassword',
+    })
+
+    expect(response.status).toBe(400)
+    expect(response.body.message).toBe('Неверный пароль')
+  })
+
+  it('должен вернуть ошибку при неправильном логине', async () => {
+    const response = await request(app).post('/login').send({
+      login: 'nonexistentuser',
+      password: 'password123',
+    })
+
+    expect(response.status).toBe(404)
+    expect(response.body.message).toBe('Пользователь не найден')
+  })
+})

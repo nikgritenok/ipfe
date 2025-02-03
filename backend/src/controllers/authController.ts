@@ -2,6 +2,15 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/userModel'
+import dotenv from 'dotenv'
+
+dotenv.config()
+
+const secret = process.env.JWT_SECRET
+
+if (!secret) {
+  throw new Error('JWT_SECRET is not defined')
+}
 
 export const registerUser = async (
   req: Request,
@@ -36,29 +45,29 @@ export const test = async (req: Request, res: Response) => {
   res.status(200).json({ message: 'test' })
 }
 
-// export const loginUser = async (req: Request, res: Response) => {
-//   const { login, password } = req.body
-//   try {
-//     const user = await User.findOne({ login })
-//     if (!user) {
-//       return res.status(404).json({ message: 'Пользователь не найден' })
-//     }
+export const loginUser = async (req: Request, res: Response) => {
+  const { login, password } = req.body
+  try {
+    const user = await User.findOne({ login })
+    if (!user) {
+      res.status(404).json({ message: 'Пользователь не найден' })
+      return
+    }
 
-//     const isPasswordCorrect = await bcrypt.compare(password, user.password)
-//     if (!isPasswordCorrect) {
-//       return res.status(400).json({ message: 'Неверный пароль' })
-//     }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password)
+    if (!isPasswordCorrect) {
+      res.status(400).json({ message: 'Неверный пароль' })
+      return
+    }
 
-//     const token = jwt.sign(
-//       { userId: user._id, role: user.role },
-//       'your_jwt_secret',
-//       { expiresIn: '1h' },
-//     )
-//     res.status(200).json({ token })
-//   } catch (error) {
-//     res.status(500).json({ message: 'Ошибка авторизации' })
-//   }
-// }
+    const token = jwt.sign({ userId: user._id, role: user.role }, secret, {
+      expiresIn: '1h',
+    })
+    res.status(200).json({ token })
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка авторизации' })
+  }
+}
 
 // export const getUserData = async (req: Request, res: Response) => {
 //   const user = await User.findById(req.userId)
