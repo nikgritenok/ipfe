@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useAuthStore } from '../stores/auth'
 
 const isLogin = ref(true)
 
@@ -13,11 +14,15 @@ const roleOptions = ref([
   { name: 'учитель', value: 'teacher' },
 ])
 
-const test = () => {
-  console.log('test')
+const registerUser = () => {
+  useAuthStore().register(
+    firstname.value,
+    lastname.value,
+    login.value,
+    password.value,
+    role.value.value,
+  )
 }
-
-console.log(role.value)
 </script>
 
 <template>
@@ -36,20 +41,38 @@ console.log(role.value)
         <label for="firstname1" class="text-surface-900 dark:text-surface-0 font-medium mb-2 block"
           >Имя</label
         >
-        <app-input id="firstname1" type="text" placeholder="Иван" class="w-full mb-4" />
+        <app-input
+          v-model="firstname"
+          id="firstname1"
+          type="text"
+          placeholder="Иван"
+          class="w-full mb-4"
+        />
 
         <label for="lastname1" class="text-surface-900 dark:text-surface-0 font-medium mb-2 block"
           >Фамилия</label
         >
-        <app-input id="lastname1" type="text" placeholder="Иванов" class="w-full mb-4" />
+        <app-input
+          v-model="lastname"
+          id="lastname1"
+          type="text"
+          placeholder="Иванов"
+          class="w-full mb-4"
+        />
         <label for="login1" class="text-surface-900 dark:text-surface-0 font-medium mb-2 block"
           >Логин</label
         >
-        <app-input id="login1" type="text" placeholder="" class="w-full mb-4" />
+        <app-input v-model="login" id="login1" type="text" placeholder="" class="w-full mb-4" />
         <label for="password1" class="text-surface-900 dark:text-surface-0 font-medium mb-2 block"
           >Пароль</label
         >
-        <app-input id="password1" type="password" placeholder="" class="w-full mb-4" />
+        <app-input
+          v-model="password"
+          id="password1"
+          type="password"
+          placeholder=""
+          class="w-full mb-4"
+        />
 
         <div class="flex items-center justify-content-between mb-3">
           <div class="flex items-center">
@@ -62,7 +85,12 @@ console.log(role.value)
           >
         </div>
 
-        <app-button label="Зарегистрироваться" icon="pi pi-user" class="w-full" />
+        <app-button
+          @click="registerUser"
+          label="Зарегистрироваться"
+          icon="pi pi-user"
+          class="w-full"
+        />
       </div>
     </div>
   </div>
@@ -74,11 +102,17 @@ console.log(role.value)
         <label for="login1" class="text-surface-900 dark:text-surface-0 font-medium mb-2 block"
           >Логин</label
         >
-        <app-input id="login1" type="text" placeholder="" class="w-full mb-4" />
+        <app-input v-model="login" id="login1" type="text" placeholder="" class="w-full mb-4" />
         <label for="password1" class="text-surface-900 dark:text-surface-0 font-medium mb-2 block"
           >Пароль</label
         >
-        <app-input id="password1" type="password" placeholder="" class="w-full mb-4" />
+        <app-input
+          v-model="password"
+          id="password1"
+          type="password"
+          placeholder=""
+          class="w-full mb-4"
+        />
 
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center">
@@ -91,7 +125,7 @@ console.log(role.value)
           >
         </div>
 
-        <app-button @click="test" label="Войти" icon="pi pi-user" class="w-full" />
+        <app-button label="Войти" icon="pi pi-user" class="w-full" />
       </div>
     </div>
   </div>
