@@ -4,6 +4,11 @@ import jwt from 'jsonwebtoken'
 import User from '../models/userModel'
 import dotenv from 'dotenv'
 
+interface CustomRequest extends Request {
+  userId?: string
+  role?: string
+}
+
 dotenv.config()
 
 const secret = process.env.JWT_SECRET
@@ -83,11 +88,11 @@ export const getUserData = async (req: Request, res: Response) => {
   })
 }
 
-// export const deleteUser = async (req: Request, res: Response) => {
-//   try {
-//     await User.findByIdAndDelete(req.userId)
-//     res.status(200).json({ message: 'Пользователь успешно удален' })
-//   } catch (error) {
-//     res.status(500).json({ message: 'Ошибка при удалении пользователя' })
-//   }
-// }
+export const deleteUser = async (req: CustomRequest, res: Response) => {
+  try {
+    await User.findByIdAndDelete(req.userId)
+    res.status(200).json({ message: 'Пользователь успешно удален' })
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при удалении пользователя' })
+  }
+}

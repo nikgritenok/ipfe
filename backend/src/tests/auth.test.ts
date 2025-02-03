@@ -141,3 +141,54 @@ describe('GET /me', () => {
     expect(response.body.message).toBe('Недействительный или истекший токен')
   })
 })
+
+describe('DELETE /delete', () => {
+  it('должен удалять пользователя, если токен валиден', async () => {
+    const registerResponse = await request(app).post('/register').send({
+      firstName: 'John',
+      lastName: 'Doe',
+      login: 'johndoe',
+      password: 'password123',
+      role: 'student',
+    })
+
+    expect(registerResponse.status).toBe(201)
+
+    const loginResponse = await request(app).post('/login').send({
+      login: 'johndoe',
+      password: 'password123',
+    })
+
+    expect(loginResponse.status).toBe(200)
+    const token = loginResponse.body.token
+
+    const userBeforeDelete = await User.findOne({ login: 'johndoe' })
+    expect(userBeforeDelete).toBeTruthy()
+
+    const deleteResponse = await request(app)
+      .delete('/delete')
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(deleteResponse.status).toBe(200)
+    expect(deleteResponse.body.message).toBe('Пользователь успешно удален')
+
+    const userAfterDelete = await User.findOne({ login: 'johndoe' })
+    expect(userAfterDelete).toBeNull()
+  })
+
+  it('должен возвращать ошибку, если токен не передан', async () => {
+    const response = await request(app).delete('/delete')
+
+    expect(response.status).toBe(403)
+    expect(response.body.message).toBe('Требуется токен')
+  })
+
+  it('должен возвращать ошибку, если токен недействителен', async () => {
+    const response = await request(app)
+      .delete('/delete')
+      .set('Authorization', 'Bearer invalid_token')
+
+    expect(response.status).toBe(401)
+    expect(response.body.message).toBe('Недействительный или истекший токен')
+  })
+})
