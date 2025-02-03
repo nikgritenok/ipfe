@@ -86,5 +86,19 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/login')
   }
 
-  return { isLoggedIn, token, register, loginUser, logout, getUserData, user }
+  async function deleteUser() {
+    try {
+      const token = localStorage.getItem('jwt')
+      await axios.delete('http://localhost:5001/delete', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      logout()
+    } catch (error) {
+      console.error('Ошибка удаления пользователя:', error)
+    }
+  }
+
+  return { isLoggedIn, token, register, loginUser, logout, getUserData, user, deleteUser }
 })
