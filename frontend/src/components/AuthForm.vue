@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
-const isLogin = ref(true)
+const isLogin = ref(false)
 
 const firstname = ref('')
 const lastname = ref('')
@@ -22,6 +22,10 @@ const registerUser = () => {
     password.value,
     role.value.value,
   )
+}
+
+const loginUser = () => {
+  useAuthStore().loginUser(login.value, password.value)
 }
 </script>
 
@@ -125,7 +129,7 @@ const registerUser = () => {
           >
         </div>
 
-        <app-button label="Войти" icon="pi pi-user" class="w-full" />
+        <app-button @click="loginUser" label="Войти" icon="pi pi-user" class="w-full" />
       </div>
     </div>
   </div>
