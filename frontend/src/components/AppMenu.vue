@@ -25,6 +25,11 @@ const items = ref<IMenuItem[]>([
     icon: 'pi pi-user',
     path: '/profile',
   },
+  {
+    label: 'Курсы',
+    icon: 'pi pi-book',
+    path: '/courses',
+  },
 ])
 </script>
 

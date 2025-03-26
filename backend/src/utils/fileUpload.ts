@@ -1,11 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import multer from 'multer'
-import { useToast } from 'primevue/usetoast'
 import sharp from 'sharp'
 import { v4 as uuidv4 } from 'uuid'
-
-const toast = useToast()
 
 // Настройка хранилища для Multer
 const storage = multer.diskStorage({
@@ -65,12 +62,7 @@ export const processImage = async (filePath: string) => {
 
     return true
   } catch (error) {
-    toast.add({
-      severity: 'error',
-      summary: 'Ошибка',
-      detail: 'Ошибка при обработке изображения',
-      life: 3000,
-    })
+    console.error('Ошибка при обработке изображения', error)
     return false
   }
 }
