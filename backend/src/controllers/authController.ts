@@ -55,7 +55,7 @@ export const registerUser = async (
   }
 }
 
-export const test = async (req: Request, res: Response) => {
+export const test = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({ message: 'test' })
 }
 
@@ -64,13 +64,13 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await User.findOne({ login })
     if (!user) {
-      res.status(404).json({ message: 'Пользователь не найден' })
+      res.status(404).json({ message: 'Пользователь не найден' })
       return
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password)
     if (!isPasswordCorrect) {
-      res.status(400).json({ message: 'Неверный пароль' })
+      res.status(400).json({ message: 'Неверный пароль' })
       return
     }
 
@@ -84,7 +84,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 }
 
 export const getUserData = async (
-  req: Express.AuthenticatedRequest,
+  req: Request,
   res: Response,
 ): Promise<void> => {
   try {
@@ -100,7 +100,7 @@ export const getUserData = async (
 }
 
 export const deleteUser = async (
-  req: Express.AuthenticatedRequest,
+  req: Request,
   res: Response,
 ): Promise<void> => {
   try {
