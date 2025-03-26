@@ -1,6 +1,6 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
 import axios from 'axios'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -34,12 +34,9 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = response.data.token
         localStorage.setItem('jwt', response.data.token)
         axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
-        console.log('Authorization header:', axios.defaults.headers.common['Authorization'])
         isLoggedIn.value = true
         router.push('/')
       }
-
-      console.log(response)
     } catch (error) {
       console.error('Ошибка регистрации:', error)
     }
