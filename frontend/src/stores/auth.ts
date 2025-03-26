@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
     role: string,
   ) {
     try {
-      const response = await api.post('/register', {
+      const { data } = await api.post('/register', {
         firstName,
         lastName,
         login,
@@ -32,9 +32,9 @@ export const useAuthStore = defineStore('auth', () => {
         role,
       })
 
-      if (response.data.token) {
-        token.value = response.data.token
-        localStorage.setItem('jwt', response.data.token)
+      if (data.token) {
+        token.value = data.token
+        localStorage.setItem('jwt', data.token)
         isLoggedIn.value = true
         router.push('/')
       }
@@ -61,14 +61,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function loginUser(login: string, password: string) {
     try {
-      const response = await api.post('/login', {
+      const { data } = await api.post('/login', {
         login,
         password,
       })
 
-      if (response.data.token) {
-        token.value = response.data.token
-        localStorage.setItem('jwt', response.data.token)
+      if (data.token) {
+        token.value = data.token
+        localStorage.setItem('jwt', data.token)
         isLoggedIn.value = true
         router.push('/')
       }
@@ -95,8 +95,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function getUserData() {
     try {
-      const response = await api.get('/me')
-      user.value = response.data
+      const { data } = await api.get('/me')
+      const { firstName, lastName, login, role } = data
+      user.value = { firstName, lastName, login, role }
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.message || 'Не удалось получить данные пользователя'
