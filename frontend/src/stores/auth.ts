@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useToast } from 'primevue/usetoast'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../api/axios'
@@ -7,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false)
   const token = ref(localStorage.getItem('jwt') || '')
   const router = useRouter()
+  const toast = useToast()
   const user = ref({
     firstName: '',
     lastName: '',
@@ -36,7 +38,14 @@ export const useAuthStore = defineStore('auth', () => {
         isLoggedIn.value = true
         router.push('/')
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Произошла ошибка при регистрации'
+      toast.add({
+        severity: 'error',
+        summary: 'Ошибка',
+        detail: errorMessage,
+        life: 3000,
+      })
       console.error('Ошибка регистрации:', error)
     }
   }
@@ -54,7 +63,14 @@ export const useAuthStore = defineStore('auth', () => {
         isLoggedIn.value = true
         router.push('/')
       }
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Неверный логин или пароль'
+      toast.add({
+        severity: 'error',
+        summary: 'Ошибка',
+        detail: errorMessage,
+        life: 3000,
+      })
       console.error('Ошибка авторизации:', error)
     }
   }
@@ -63,7 +79,15 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await api.get('/me')
       user.value = response.data
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || 'Не удалось получить данные пользователя'
+      toast.add({
+        severity: 'error',
+        summary: 'Ошибка',
+        detail: errorMessage,
+        life: 3000,
+      })
       console.error('Ошибка получения данных пользователя:', error)
     }
   }
@@ -79,7 +103,14 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await api.delete('/delete')
       logout()
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Не удалось удалить аккаунт'
+      toast.add({
+        severity: 'error',
+        summary: 'Ошибка',
+        detail: errorMessage,
+        life: 3000,
+      })
       console.error('Ошибка удаления пользователя:', error)
     }
   }
