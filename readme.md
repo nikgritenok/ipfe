@@ -1,55 +1,108 @@
-# IPFE Project
+# Информационный портал для образования (IPFE)
 
-## Обзор
+## О проекте
 
-Данный проект - это веб-приложение, которое включает в себя backend, написанный на TypeScript и Express, и frontend, разработанный с использованием Vue.js и Vite. Проект структурирован в два основных каталога: `backend` и `frontend`.
+IPFE - это современное веб-приложение, разработанное для образовательных целей. Проект построен с использованием Vue.js для фронтенда и Node.js с Express для бэкенда.
 
-## Prerequisites
+## Технологический стек
 
-- Node.js версии 16 или выше
-- Yarn (optional, но рекомендуется для управления пакетами)
+### Frontend
+
+- Vue.js
+- TypeScript
+- Vite
+- Vue Router
+- Pinia
+- PrimeVue
+- PrimeFlex
+- PrimeIcons
+
+### Backend
+
+- Node.js
+- Express
+- TypeScript
+- MongoDB (Mongoose)
+- JWT для аутентификации
+- Multer для загрузки файлов
+- Sharp для обработки изображений
+
+## Структура проекта
+
+```
+ipfe/
+├── frontend/          # Vue.js приложение
+├── backend/           # Express сервер
+└── package.json       # Корневой package.json с workspaces
+```
 
 ## Установка и запуск
 
-1. Клонировать репозиторий:
+### Предварительные требования
 
-   ```bash
-   git clone <repository-url>
-   cd ipfe
-   ```
+- Node.js (версия 16 или выше)
+- Yarn
+- MongoDB
 
-2. Установить зависимости для backend:
+### Установка зависимостей
 
-   ```bash
-   cd backend
-   yarn install
-   ```
+```bash
+# Установка всех зависимостей (frontend и backend)
+yarn install
+```
 
-3. Запустите backend:
+### Запуск в режиме разработки
 
-   ```bash
-   yarn dev
-   ```
+#### Frontend
 
-## Переменные окружения
+```bash
+cd frontend
+yarn dev
+```
 
-- Создайте файл `.env` в директории `backend` и установите следующие переменные:
+#### Backend
 
-  ```bash
-  MONGODB_URI=mongodb://localhost:27017
-  JWT_SECRET=your-secret-key
-  ```
+```bash
+cd backend
+yarn dev
+```
 
-- Создайте файл `.env` в директории `backend` и установите следующие переменные:
-  ```bash
-  MONGODB_URI=mongodb://localhost:27017
-  JWT_SECRET=your-secret-key
-  ```
+### Сборка для продакшена
+
+```bash
+# Frontend
+cd frontend
+yarn build
+
+# Backend
+cd backend
+yarn build
+```
 
 ## Тестирование
 
-1. Run the tests:
-   ```bash
-   cd backend
-   yarn run test
-   ```
+```bash
+# Запуск тестов backend
+cd backend
+yarn test
+```
+
+## Линтинг
+
+```bash
+# Frontend
+cd frontend
+yarn lint
+
+# Backend
+cd backend
+yarn lint
+```
+
+## Рекомендуемые настройки IDE
+
+- [VSCode](https://code.visualstudio.com/)
+- [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) для Vue.js
+- [ESLint](https://eslint.org/)
+- [Prettier](https://prettier.io/)
+

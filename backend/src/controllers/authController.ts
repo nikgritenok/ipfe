@@ -1,8 +1,8 @@
-import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
+import dotenv from 'dotenv'
+import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import User from '../models/userModel'
-import dotenv from 'dotenv'
 
 interface CustomRequest extends Request {
   userId?: string
@@ -59,7 +59,7 @@ export const test = async (req: Request, res: Response) => {
   res.status(200).json({ message: 'test' })
 }
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
   const { login, password } = req.body
   try {
     const user = await User.findOne({ login })
@@ -83,38 +83,34 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 }
 
-export const getUserData = async (req: Request, res: Response) => {
+export const getUserData = async (
+  req: Express.AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   try {
-    const userId = (req as CustomRequest).userId
-    if (!userId) {
-      res.status(401).json({ message: 'Не авторизован' })
-      return
-    }
-
-    const user = await User.findById(userId)
+    const user = await User.findById(req.userId).select('-password')
     if (!user) {
       res.status(404).json({ message: 'Пользователь не найден' })
       return
     }
-
-    res.status(200).json({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      login: user.login,
-      role: user.role,
-    })
+    res.json(user)
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Ошибка при получении данных пользователя' })
+    res.status(500).json({ message: 'Ошибка сервера' })
   }
 }
 
-export const deleteUser = async (req: CustomRequest, res: Response) => {
+export const deleteUser = async (
+  req: Express.AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   try {
-    await User.findByIdAndDelete(req.userId)
-    res.status(200).json({ message: 'Пользователь успешно удален' })
+    const user = await User.findByIdAndDelete(req.userId)
+    if (!user) {
+      res.status(404).json({ message: 'Пользователь не найден' })
+      return
+    }
+    res.json({ message: 'Пользователь успешно удален' })
   } catch (error) {
-    res.status(500).json({ message: 'Ошибка при удалении пользователя' })
+    res.status(500).json({ message: 'Ошибка сервера' })
   }
 }

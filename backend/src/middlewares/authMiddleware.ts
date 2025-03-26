@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
+import { NextFunction, Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
 
 dotenv.config()
 const secret = process.env.JWT_SECRET
@@ -9,39 +9,26 @@ if (!secret) {
   throw new Error('JWT_SECRET is not defined')
 }
 
-interface CustomRequest extends Request {
-  userId?: string
-  role?: string
-}
-
 interface JwtPayload {
   userId: string
   role: string
 }
 
-const authMiddleware = (
-  req: CustomRequest,
-  res: Response,
-  next: NextFunction,
-) => {
-  const token = req.headers.authorization?.split(' ')[1]
-  if (!token) {
-    res.status(403).json({ message: 'Требуется токен' })
-    return
-  }
-
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const decoded = jwt.verify(token, secret)
+    const token = req.headers.authorization?.split(' ')[1]
 
-    if (typeof decoded === 'object' && decoded !== null) {
-      req.userId = (decoded as JwtPayload).userId
-      req.role = (decoded as JwtPayload).role
-      next()
-    } else {
-      res.status(401).json({ message: 'Недействительный или истекший токен' })
+    if (!token) {
+      return res.status(401).json({ message: 'Токен не предоставлен' })
     }
+
+    const decoded = jwt.verify(token, secret) as JwtPayload
+    ;(req as Express.AuthenticatedRequest).userId = decoded.userId
+    ;(req as Express.AuthenticatedRequest).role = decoded.role
+
+    next()
   } catch (error) {
-    res.status(401).json({ message: 'Недействительный или истекший токен' })
+    return res.status(401).json({ message: 'Неверный токен' })
   }
 }
 
