@@ -46,7 +46,6 @@ export const useAuthStore = defineStore('auth', () => {
         detail: errorMessage,
         life: 3000,
       })
-      console.error('Ошибка регистрации:', error)
     }
   }
 
@@ -71,7 +70,6 @@ export const useAuthStore = defineStore('auth', () => {
         detail: errorMessage,
         life: 3000,
       })
-      console.error('Ошибка авторизации:', error)
     }
   }
 
@@ -88,7 +86,6 @@ export const useAuthStore = defineStore('auth', () => {
         detail: errorMessage,
         life: 3000,
       })
-      console.error('Ошибка получения данных пользователя:', error)
     }
   }
 
@@ -111,7 +108,6 @@ export const useAuthStore = defineStore('auth', () => {
         detail: errorMessage,
         life: 3000,
       })
-      console.error('Ошибка удаления пользователя:', error)
     }
   }
 
