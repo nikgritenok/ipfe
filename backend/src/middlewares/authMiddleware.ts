@@ -1,17 +1,13 @@
 import dotenv from 'dotenv'
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { JwtPayload } from '../types/jwt'
 
 dotenv.config()
 const secret = process.env.JWT_SECRET
 
 if (!secret) {
   throw new Error('JWT_SECRET is not defined')
-}
-
-interface JwtPayload {
-  userId: string
-  role: string
 }
 
 const authMiddleware = async (
