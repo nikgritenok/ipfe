@@ -39,12 +39,22 @@ export const useAuthStore = defineStore('auth', () => {
         router.push('/')
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Произошла ошибка при регистрации'
+      let errorMessage = 'Произошла ошибка при регистрации'
+
+      if (error.code === 'ECONNREFUSED' || error.code === 'ECONNABORTED') {
+        errorMessage =
+          'Не удалось подключиться к серверу. Проверьте подключение к интернету и попробуйте снова.'
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Ошибка сервера. Пожалуйста, попробуйте позже.'
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
+      }
+
       toast.add({
         severity: 'error',
         summary: 'Ошибка',
         detail: errorMessage,
-        life: 3000,
+        life: 5000,
       })
     }
   }
@@ -63,12 +73,22 @@ export const useAuthStore = defineStore('auth', () => {
         router.push('/')
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Неверный логин или пароль'
+      let errorMessage = 'Неверный логин или пароль'
+
+      if (error.code === 'ECONNREFUSED' || error.code === 'ECONNABORTED') {
+        errorMessage =
+          'Не удалось подключиться к серверу. Проверьте подключение к интернету и попробуйте снова.'
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Ошибка сервера. Пожалуйста, попробуйте позже.'
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
+      }
+
       toast.add({
         severity: 'error',
         summary: 'Ошибка',
         detail: errorMessage,
-        life: 3000,
+        life: 5000,
       })
     }
   }
