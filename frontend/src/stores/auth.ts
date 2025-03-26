@@ -1,7 +1,7 @@
-import axios from 'axios'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import api from '../api/axios'
 
 export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = ref(false)
@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
     role: string,
   ) {
     try {
-      const response = await axios.post('http://localhost:5001/register', {
+      const response = await api.post('/register', {
         firstName,
         lastName,
         login,
@@ -33,7 +33,6 @@ export const useAuthStore = defineStore('auth', () => {
       if (response.data.token) {
         token.value = response.data.token
         localStorage.setItem('jwt', response.data.token)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
         isLoggedIn.value = true
         router.push('/')
       }
@@ -44,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function loginUser(login: string, password: string) {
     try {
-      const response = await axios.post('http://localhost:5001/login', {
+      const response = await api.post('/login', {
         login,
         password,
       })
@@ -52,7 +51,6 @@ export const useAuthStore = defineStore('auth', () => {
       if (response.data.token) {
         token.value = response.data.token
         localStorage.setItem('jwt', response.data.token)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
         isLoggedIn.value = true
         router.push('/')
       }
@@ -63,12 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function getUserData() {
     try {
-      const token = localStorage.getItem('jwt')
-      const response = await axios.get('http://localhost:5001/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await api.get('/me')
       user.value = response.data
     } catch (error) {
       console.error('Ошибка получения данных пользователя:', error)
@@ -79,18 +72,12 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = ''
     isLoggedIn.value = false
     localStorage.removeItem('jwt')
-    delete axios.defaults.headers.common['Authorization']
     router.push('/login')
   }
 
   async function deleteUser() {
     try {
-      const token = localStorage.getItem('jwt')
-      await axios.delete('http://localhost:5001/delete', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      await api.delete('/delete')
       logout()
     } catch (error) {
       console.error('Ошибка удаления пользователя:', error)
