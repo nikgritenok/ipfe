@@ -34,6 +34,8 @@ const levels = [
   { value: 'advanced', label: 'Продвинутый' },
 ]
 
+const tagsInput = ref('')
+
 const handleImageUpload = (event: any) => {
   console.log('handleImageUpload', event)
   if (event.files && event.files[0]) {
@@ -43,17 +45,61 @@ const handleImageUpload = (event: any) => {
 }
 
 const handleSubmit = async () => {
-  if (imageFile.value) {
-    formData.value.image = imageFile.value
+  // Валидация обязательных полей
+  if (!formData.value.title.trim()) {
+    store.error = 'Название курса обязательно'
+    return
+  }
+  if (!formData.value.category) {
+    store.error = 'Выберите категорию'
+    return
+  }
+  if (!imageFile.value) {
+    store.error = 'Необходимо загрузить изображение'
+    return
   }
 
-  if (props.courseId) {
-    await store.updateCourse(props.courseId, formData.value)
-  } else {
-    await store.createCourse(formData.value)
+  // Преобразование строки тегов в массив
+  formData.value.tags = tagsInput.value
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 0)
+
+  const submitData = {
+    ...formData.value,
+    image: imageFile.value,
   }
 
-  emit('submit')
+  // Подробное логирование
+  console.log('Отправляемые данные:', {
+    title: submitData.title,
+    description: submitData.description,
+    price: submitData.price,
+    category: submitData.category,
+    level: submitData.level,
+    tags: submitData.tags,
+    image:
+      submitData.image instanceof File
+        ? {
+            name: submitData.image.name,
+            type: submitData.image.type,
+            size: submitData.image.size,
+          }
+        : submitData.image,
+  })
+
+  try {
+    if (props.courseId) {
+      await store.updateCourse(props.courseId, submitData)
+    } else {
+      await store.createCourse(submitData)
+    }
+    emit('submit')
+  } catch (error: any) {
+    console.error('Error submitting course:', error)
+    console.error('Error response:', error.response?.data)
+    store.error = error.response?.data?.message || 'Произошла ошибка при сохранении курса'
+  }
 }
 
 const handleCancel = () => {
@@ -72,6 +118,7 @@ onMounted(async () => {
         level: course.level,
         tags: course.tags.map((tag) => tag.name),
       }
+      tagsInput.value = course.tags.map((tag) => tag.name).join(', ')
       imagePreview.value = course.image
     }
   }
@@ -152,7 +199,7 @@ onMounted(async () => {
             >
 
             <app-input
-              v-model="formData.tags"
+              v-model="tagsInput"
               id="tags"
               type="text"
               placeholder="Например: JavaScript, Vue, TypeScript"

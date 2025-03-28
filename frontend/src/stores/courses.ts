@@ -51,6 +51,8 @@ export const useCoursesStore = defineStore('courses', () => {
       Object.entries(courseData).forEach(([key, value]) => {
         if (key === 'tags') {
           formData.append(key, JSON.stringify(value))
+        } else if (key === 'image' && value instanceof File) {
+          formData.append('image', value)
         } else if (value !== undefined) {
           formData.append(key, value.toString())
         }
@@ -82,6 +84,8 @@ export const useCoursesStore = defineStore('courses', () => {
       Object.entries(courseData).forEach(([key, value]) => {
         if (key === 'tags') {
           formData.append(key, JSON.stringify(value))
+        } else if (key === 'image' && value instanceof File) {
+          formData.append('image', value)
         } else if (value !== undefined) {
           formData.append(key, value.toString())
         }
