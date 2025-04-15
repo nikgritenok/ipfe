@@ -16,48 +16,36 @@ onMounted(async () => {
     <div v-else-if="store.error" class="error">
       {{ store.error }}
     </div>
+
     <div v-else class="courses-grid">
-      <div v-for="course in store.courses" :key="course._id" class="course-card">
-        <img :src="course.image" :alt="course.title" class="course-image" />
-        <div class="course-content">
+      <app-card v-for="course in store.courses" :key="course._id">
+        <template #header>
+          <img :src="course.image" :alt="course.title" class="course-image" />
+        </template>
+        <template #title>
           <h3 class="course-title">{{ course.title }}</h3>
+        </template>
+        <template #content>
           <p class="course-description">{{ course.description }}</p>
+        </template>
+        <template #footer>
           <div class="course-meta">
             <span class="course-price">{{ course.price }} ₽</span>
             <span class="course-level">{{ course.level }}</span>
             <span class="course-category">{{ course.category }}</span>
           </div>
-          <div class="course-tags">
-            <span v-for="tag in course.tags" :key="tag._id" class="tag">
-              {{ tag.name }}
-            </span>
-          </div>
-        </div>
-      </div>
+        </template>
+      </app-card>
     </div>
-    <div v-if="store.totalPages > 1" class="pagination">
-      <button
-        :disabled="store.currentPage === 1"
-        @click="store.fetchCourses({ page: store.currentPage - 1 })"
-      >
-        Назад
-      </button>
+    <div v-if="store.totalPages > 1" class="flex justify-center items-center">
+      <app-button @click="store.fetchCourses({ page: store.currentPage - 1 })">Назад</app-button>
       <span>Страница {{ store.currentPage }} из {{ store.totalPages }}</span>
-      <button
-        :disabled="store.currentPage === store.totalPages"
-        @click="store.fetchCourses({ page: store.currentPage + 1 })"
-      >
-        Вперед
-      </button>
+      <app-button @click="store.fetchCourses({ page: store.currentPage + 1 })">Вперед</app-button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.course-list {
-  padding: 20px;
-}
-
 .loading,
 .error {
   text-align: center;

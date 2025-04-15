@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import dotenv from 'dotenv'
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import User from '../models/userModel'
+import { User } from '../models/userModel'
 
 interface CustomRequest extends Request {
   userId?: string
@@ -84,10 +84,14 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 }
 
 export const getUserData = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
 ): Promise<void> => {
   try {
+    if (!req.userId) {
+      res.status(401).json({ message: 'Не авторизован' })
+      return
+    }
     const user = await User.findById(req.userId).select('-password')
     if (!user) {
       res.status(404).json({ message: 'Пользователь не найден' })
@@ -100,16 +104,20 @@ export const getUserData = async (
 }
 
 export const deleteUser = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
 ): Promise<void> => {
   try {
+    if (!req.userId) {
+      res.status(401).json({ message: 'Не авторизован' })
+      return
+    }
     const user = await User.findByIdAndDelete(req.userId)
     if (!user) {
       res.status(404).json({ message: 'Пользователь не найден' })
       return
     }
-    res.json({ message: 'Пользователь успешно удален' })
+    res.status(200).json({ message: 'Пользователь успешно удален' })
   } catch (error) {
     res.status(500).json({ message: 'Ошибка сервера' })
   }

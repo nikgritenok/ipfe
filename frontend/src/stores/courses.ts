@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import api from '@/api/axios'
 import type { Course, CourseFormData, CourseQuery, CourseResponse } from '@/types/course'
 
+export const IMAGE_BASE_URL = `http://localhost:5001`
+
 export const useCoursesStore = defineStore('courses', () => {
   const courses = ref<Course[]>([])
   const loading = ref(false)
@@ -16,7 +18,10 @@ export const useCoursesStore = defineStore('courses', () => {
       loading.value = true
       error.value = null
       const response = await api.get<CourseResponse>('/courses', { params: query })
-      courses.value = response.data.data.courses
+      courses.value = response.data.data.courses.map((course) => ({
+        ...course,
+        image: `${IMAGE_BASE_URL}/${course.image}`,
+      }))
       totalPages.value = response.data.totalPages
       currentPage.value = response.data.currentPage
       total.value = response.data.total
