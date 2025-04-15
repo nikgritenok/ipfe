@@ -230,8 +230,8 @@ export const updateCourse: AsyncRequestHandler<
       return
     }
 
-    // Проверяем, является ли пользователь автором курса или администратором
-    if (course.author.toString() !== req.userId && req.role !== 'teacher') {
+    // Проверяем, является ли пользователь автором курса
+    if (course.author.toString() !== req.userId) {
       res.status(403).json({
         status: 'fail',
         message: 'У вас нет прав для обновления этого курса',
@@ -331,8 +331,8 @@ export const deleteCourse: AsyncRequestHandler<
       return
     }
 
-    // Проверяем, является ли пользователь автором курса или администратором
-    if (course.author.toString() !== req.userId && req.role !== 'teacher') {
+    // Проверяем, является ли пользователь автором курса
+    if (course.author.toString() !== req.userId) {
       res.status(403).json({
         status: 'fail',
         message: 'У вас нет прав для удаления этого курса',

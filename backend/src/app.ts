@@ -14,9 +14,14 @@ app.use(express.json())
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
-app.use(authRouter)
-app.use(courseRouter)
+app.use('/api/auth', authRouter)
+app.use('/api/courses', courseRouter)
 
-app.listen(5001, () => {
-  console.log('Сервер запущен на порту 5001')
-})
+// Запускаем сервер только если файл запущен напрямую
+if (require.main === module) {
+  app.listen(5001, () => {
+    console.log('Сервер запущен на порту 5001')
+  })
+}
+
+export { app }

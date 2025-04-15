@@ -10,8 +10,13 @@ if (!secret) {
   throw new Error('JWT_SECRET is not defined')
 }
 
+interface CustomRequest extends Request {
+  userId?: string
+  role?: string
+}
+
 const authMiddleware = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {

@@ -10,6 +10,7 @@ import {
   updateCourse,
 } from '../controllers/courseController'
 import authMiddleware from '../middlewares/authMiddleware'
+import teacherMiddleware from '../middlewares/teacherMiddleware'
 import { upload } from '../utils/fileUpload'
 
 const router = express.Router()
@@ -17,9 +18,21 @@ const router = express.Router()
 // Маршруты для курсов
 router.get('/courses', getAllCourses)
 router.get('/courses/:id', getCourseById)
-router.post('/courses', authMiddleware, upload.single('image'), createCourse)
-router.put('/courses/:id', authMiddleware, upload.single('image'), updateCourse)
-router.delete('/courses/:id', authMiddleware, deleteCourse)
+router.post(
+  '/courses',
+  authMiddleware,
+  teacherMiddleware,
+  upload.single('image'),
+  createCourse,
+)
+router.put(
+  '/courses/:id',
+  authMiddleware,
+  teacherMiddleware,
+  upload.single('image'),
+  updateCourse,
+)
+router.delete('/courses/:id', authMiddleware, teacherMiddleware, deleteCourse)
 
 // Маршруты для избранных курсов
 router.post('/favorites/:courseId', authMiddleware, addToFavorites)

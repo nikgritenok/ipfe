@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose'
+
 import slugify from 'slugify'
 
 interface ITag extends Document {

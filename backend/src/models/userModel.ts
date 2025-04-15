@@ -16,6 +16,4 @@ const UserSchema = new Schema<IUser>({
   role: { type: String, required: true, enum: ['student', 'teacher'] },
 })
 
-const User = mongoose.model<IUser>('User', UserSchema)
-
-export default User
+export const User = mongoose.model<IUser>('User', UserSchema)
