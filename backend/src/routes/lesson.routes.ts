@@ -98,6 +98,8 @@ router.get('/course/:courseId', lessonController.getAllByCourse)
  *               $ref: '#/components/schemas/Lesson'
  *       404:
  *         description: Урок не найден
+ *       400:
+ *         description: Ошибка при получении урока
  */
 router.get('/:id', lessonController.getOne)
 

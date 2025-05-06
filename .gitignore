@@ -25,3 +25,6 @@ Thumbs.db
 # Кэш и временные файлы
 coverage/
 .qodo
+
+# Загрузки
+uploads/

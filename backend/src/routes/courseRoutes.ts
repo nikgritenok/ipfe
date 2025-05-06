@@ -1,12 +1,9 @@
 import express from 'express'
 import {
-  addToFavorites,
   createCourse,
   deleteCourse,
   getAllCourses,
   getCourseById,
-  getFavorites,
-  removeFromFavorites,
   updateCourse,
 } from '../controllers/courseController'
 import authMiddleware from '../middlewares/authMiddleware'
@@ -28,9 +25,67 @@ const router = express.Router()
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Course'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 results:
+ *                   type: number
+ *                 total:
+ *                   type: number
+ *                 totalPages:
+ *                   type: number
+ *                 currentPage:
+ *                   type: number
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     courses:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           title:
+ *                             type: string
+ *                           slug:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                           price:
+ *                             type: number
+ *                           image:
+ *                             type: string
+ *                           category:
+ *                             type: string
+ *                           level:
+ *                             type: string
+ *                           published:
+ *                             type: boolean
+ *                           author:
+ *                             type: object
+ *                             nullable: true
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                               firstName:
+ *                                 type: string
+ *                               lastName:
+ *                                 type: string
+ *                           tags:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 _id:
+ *                                   type: string
+ *                                 name:
+ *                                   type: string
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
  */
 router.get('/', getAllCourses)
 
@@ -53,12 +108,57 @@ router.get('/', getAllCourses)
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Course'
- *         links:
- *           getLessons:
- *             $ref: '#/components/links/GetCourseLessons'
- *           getComments:
- *             $ref: '#/components/links/GetCourseComments'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     course:
+ *                       type: object
+ *                       properties:
+ *                         _id:
+ *                           type: string
+ *                         title:
+ *                           type: string
+ *                         slug:
+ *                           type: string
+ *                         description:
+ *                           type: string
+ *                         price:
+ *                           type: number
+ *                         image:
+ *                           type: string
+ *                         category:
+ *                           type: string
+ *                         level:
+ *                           type: string
+ *                         published:
+ *                           type: boolean
+ *                         author:
+ *                           type: object
+ *                           nullable: true
+ *                           properties:
+ *                             _id:
+ *                               type: string
+ *                             firstName:
+ *                               type: string
+ *                             lastName:
+ *                               type: string
+ *                         tags:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               _id:
+ *                                 type: string
+ *                               name:
+ *                                 type: string
+ *                         createdAt:
+ *                           type: string
+ *                           format: date-time
  *       404:
  *         description: Курс не найден
  */
@@ -90,12 +190,34 @@ router.get('/:id', getCourseById)
  *                 type: string
  *               price:
  *                 type: number
+ *               category:
+ *                 type: string
+ *               level:
+ *                 type: string
+ *                 enum: [beginner, intermediate, advanced]
+ *                 default: beginner
+ *               tags:
+ *                 type: string
+ *                 description: JSON-строка с массивом тегов, например ["JavaScript", "React"]
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       201:
  *         description: Курс успешно создан
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     course:
+ *                       type: object
  *       401:
  *         description: Не авторизован
  *       403:
@@ -136,12 +258,35 @@ router.post(
  *                 type: string
  *               price:
  *                 type: number
+ *               category:
+ *                 type: string
+ *               level:
+ *                 type: string
+ *                 enum: [beginner, intermediate, advanced]
+ *               published:
+ *                 type: boolean
+ *               tags:
+ *                 type: string
+ *                 description: JSON-строка с массивом тегов, например ["JavaScript", "React"]
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       200:
  *         description: Курс успешно обновлен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     course:
+ *                       type: object
  *       401:
  *         description: Не авторизован
  *       403:
@@ -183,78 +328,5 @@ router.put(
  *         description: Курс не найден
  */
 router.delete('/:id', authMiddleware, teacherMiddleware, deleteCourse)
-
-/**
- * @swagger
- * /api/favorites/{courseId}:
- *   post:
- *     tags:
- *       - Избранное
- *     summary: Добавление курса в избранное
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: courseId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Курс добавлен в избранное
- *       401:
- *         description: Не авторизован
- *       404:
- *         description: Курс не найден
- */
-router.post('/favorites/:courseId', authMiddleware, addToFavorites)
-
-/**
- * @swagger
- * /api/favorites/{courseId}:
- *   delete:
- *     tags:
- *       - Избранное
- *     summary: Удаление курса из избранного
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: courseId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Курс удален из избранного
- *       401:
- *         description: Не авторизован
- *       404:
- *         description: Курс не найден
- */
-router.delete('/favorites/:courseId', authMiddleware, removeFromFavorites)
-
-/**
- * @swagger
- * /api/favorites:
- *   get:
- *     tags:
- *       - Избранное
- *     summary: Получение списка избранных курсов
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Список избранных курсов
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Course'
- *       401:
- *         description: Не авторизован
- */
-router.get('/favorites', authMiddleware, getFavorites)
 
 export default router
