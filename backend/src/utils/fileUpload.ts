@@ -40,18 +40,26 @@ const fileFilter = (
 // Сжатие изображения и добавление водяного знака
 export const processImage = async (filePath: string) => {
   try {
-    const image = sharp(filePath)
-
-    // Добавляем водяной знак (загружаем нашу водяную марку)
+    // Получаем путь к водяному знаку
     const watermarkPath = path.join(__dirname, '../assets/watermark.png')
 
-    // Сначала сжимаем изображение
-    const processedImage = await image
+    // Получаем метаданные исходного изображения
+    const imageMetadata = await sharp(filePath).metadata()
+
+    // Изменяем размер водяного знака, чтобы он был меньше основного изображения
+    // Обычно водяной знак должен занимать 20-30% от исходного изображения
+    const watermarkWidth = Math.floor(imageMetadata.width! * 0.3)
+    const watermarkBuffer = await sharp(watermarkPath)
+      .resize(watermarkWidth, null, { fit: 'inside' })
+      .toBuffer()
+
+    // Обрабатываем основное изображение и добавляем измененный водяной знак
+    const processedImage = await sharp(filePath)
       .resize(800, 600, { fit: 'inside' })
       .composite([
         {
-          input: watermarkPath,
-          gravity: 'southeast',
+          input: watermarkBuffer,
+          gravity: 'southeast', // Размещение в правом нижнем углу
         },
       ])
       .jpeg({ quality: 80 })
