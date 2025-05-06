@@ -7,6 +7,7 @@ import { specs } from './config/swagger'
 import authRouter from './routes/authRoutes'
 import commentRouter from './routes/comment.routes'
 import courseRouter from './routes/courseRoutes'
+import enrollmentRouter from './routes/enrollmentRoutes'
 import favoritesRouter from './routes/favorites'
 import lessonRouter from './routes/lesson.routes'
 
@@ -26,6 +27,7 @@ app.use('/api/courses', courseRouter)
 app.use('/api/lessons', lessonRouter)
 app.use('/api/comments', commentRouter)
 app.use('/api/favorites', favoritesRouter)
+app.use('/api/enrollments', enrollmentRouter)
 
 if (require.main === module) {
   app.listen(5001, () => {
