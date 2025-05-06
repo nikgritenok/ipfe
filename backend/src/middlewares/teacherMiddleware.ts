@@ -1,18 +1,18 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { USER_ROLES } from '../constants/roles'
 
-export const teacherMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  if (!req.user) {
-    return res.status(401).json({ message: 'Не авторизован' })
+const teacherMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.userId || !req.role) {
+    res.status(401).json({ message: 'Не авторизован' })
+    return
   }
 
   if (req.role !== USER_ROLES.TEACHER) {
-    return res.status(403).json({ message: 'Доступ запрещен' })
+    res.status(403).json({ message: 'Доступ запрещен' })
+    return
   }
 
   next()
 }
+
+export default teacherMiddleware
