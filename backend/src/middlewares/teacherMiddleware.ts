@@ -1,22 +1,18 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
+import { USER_ROLES } from '../constants/roles'
 
-const teacherMiddleware = async (
+export const teacherMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
-  try {
-    if (req.role !== 'teacher') {
-      res
-        .status(403)
-        .json({ message: 'Доступ запрещен. Требуется роль учителя.' })
-      return
-    }
-    next()
-  } catch (error) {
-    res.status(500).json({ message: 'Ошибка при проверке роли' })
-    return
+) => {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Не авторизован' })
   }
-}
 
-export default teacherMiddleware
+  if (req.role !== USER_ROLES.TEACHER) {
+    return res.status(403).json({ message: 'Доступ запрещен' })
+  }
+
+  next()
+}

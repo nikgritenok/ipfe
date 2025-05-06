@@ -1,20 +1,25 @@
-import mongoose, { Document, Schema } from 'mongoose'
+import { Schema, model, Types } from 'mongoose'
 
-interface IFavorite extends Document {
-  user: mongoose.Types.ObjectId
-  course: mongoose.Types.ObjectId
+interface IFavorite {
+  user: Types.ObjectId
+  course: Types.ObjectId
   createdAt: Date
+  updatedAt: Date
 }
 
-const FavoriteSchema = new Schema<IFavorite>({
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  course: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
-  createdAt: { type: Date, default: Date.now },
-})
+const favoriteSchema = new Schema<IFavorite>(
+  {
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    course: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
+  },
+  {
+    timestamps: true,
+  },
+)
 
 // Создаем составной индекс для предотвращения дублирования
-FavoriteSchema.index({ user: 1, course: 1 }, { unique: true })
+favoriteSchema.index({ user: 1, course: 1 }, { unique: true })
 
-const Favorite = mongoose.model<IFavorite>('Favorite', FavoriteSchema)
+const FavoriteCourse = model<IFavorite>('FavoriteCourse', favoriteSchema)
 
-export { Favorite, IFavorite }
+export { FavoriteCourse, IFavorite }

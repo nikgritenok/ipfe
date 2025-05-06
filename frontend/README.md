@@ -1,38 +1,69 @@
-# Informational portal for education
+# Frontend
 
+Фронтенд часть образовательной платформы, разработанная с использованием Vue.js и TypeScript.
 
-## Recommended IDE Setup
+## Структура проекта
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- `src/` - исходный код приложения
+  - `components/` - Vue компоненты
+  - `pages/` - страницы приложения
+  - `hooks/` - пользовательские хуки
+  - `services/` - сервисы для работы с API
+  - `types/` - TypeScript типы
+  - `utils/` - вспомогательные функции
+- `public/` - статические файлы
+- `.vscode/` - настройки VS Code
+- `env.d.ts` - определения типов для переменных окружения
 
-## Type Support for `.vue` Imports in TS
+## Технологии
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- Vue.js
+- TypeScript
+- Vite
+- ESLint
+- Prettier
 
-## Customize configuration
+## Запуск проекта
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+1. Установите зависимости:
 
-## Project Setup
-
-```sh
+```bash
 yarn
 ```
 
-### Compile and Hot-Reload for Development
+2. Запустите проект в режиме разработки:
 
-```sh
+```bash
 yarn dev
 ```
 
-### Type-Check, Compile and Minify for Production
+3. Сборка для продакшена:
 
-```sh
+```bash
 yarn build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+4. Проверка типов:
 
-```sh
+```bash
+yarn type-check
+```
+
+5. Линтинг кода:
+
+```bash
 yarn lint
 ```
+
+## Настройка IDE
+
+Рекомендуется использовать [VSCode](https://code.visualstudio.com/) с установленным расширением [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) для лучшей поддержки Vue.js.
+
+## Конфигурация
+
+- `vite.config.ts` - конфигурация сборщика Vite
+- `.env` - переменные окружения
+- `tsconfig.json` - настройки TypeScript
+- `.prettierrc.json` - настройки форматирования кода
+- `.editorconfig` - настройки редактора
+- `eslint.config.ts` - настройки линтера

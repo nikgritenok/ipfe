@@ -1,8 +1,7 @@
-import { Request } from 'express'
-import mongoose from 'mongoose'
+import { Types } from 'mongoose'
 import slugify from 'slugify'
 import { Course, Tag } from '../models/courseModel'
-import { Favorite } from '../models/favoriteModel'
+import { FavoriteCourse } from '../models/favoriteModel'
 import {
   ApiResponse,
   AsyncRequestHandler,
@@ -12,7 +11,6 @@ import {
 } from '../types/express'
 import { processImage } from '../utils/fileUpload'
 
-// Получить все курсы с сортировкой, фильтрацией и пагинацией
 export const getAllCourses: AsyncRequestHandler<
   {},
   ApiResponse,
@@ -36,16 +34,13 @@ export const getAllCourses: AsyncRequestHandler<
     const limitNumber = parseInt(limit as string)
     const skip = (pageNumber - 1) * limitNumber
 
-    // Базовый фильтр
     const filter: any = {}
 
-    // Добавляем фильтры, если они указаны
     if (category) filter.category = category
     if (level) filter.level = level
     if (search) filter.title = { $regex: search, $options: 'i' }
     if (published !== undefined) filter.published = published === 'true'
 
-    // Если указан тег, сначала находим его id
     if (tag) {
       const tagDoc = await Tag.findOne({ name: tag })
       if (tagDoc) {
@@ -53,12 +48,10 @@ export const getAllCourses: AsyncRequestHandler<
       }
     }
 
-    // Строим query для сортировки
     const sortOrder = order === 'desc' ? -1 : 1
     const sortQuery: any = {}
     sortQuery[sort as string] = sortOrder
 
-    // Получаем курсы
     const courses = await Course.find(filter)
       .populate('author', 'firstName lastName')
       .populate('tags', 'name')
@@ -66,7 +59,6 @@ export const getAllCourses: AsyncRequestHandler<
       .skip(skip)
       .limit(limitNumber)
 
-    // Получаем общее количество курсов
     const total = await Course.countDocuments(filter)
 
     res.status(200).json({
@@ -88,7 +80,6 @@ export const getAllCourses: AsyncRequestHandler<
   }
 }
 
-// Получить курс по ID
 export const getCourseById: AsyncRequestHandler<
   CourseParams,
   ApiResponse
@@ -123,7 +114,6 @@ export const getCourseById: AsyncRequestHandler<
   }
 }
 
-// Создать новый курс
 export const createCourse: AsyncRequestHandler<
   {},
   ApiResponse,
@@ -148,18 +138,14 @@ export const createCourse: AsyncRequestHandler<
       return
     }
 
-    // Обработка изображения (сжатие и водяной знак)
     await processImage(req.file.path)
 
-    // Генерируем slug из заголовка
     const slug = slugify(title, { lower: true })
 
-    // Обработка тегов
-    let tagIds: mongoose.Types.ObjectId[] = []
+    let tagIds: Types.ObjectId[] = []
     if (tags) {
       const tagNames = JSON.parse(tags) as string[]
 
-      // Для каждого тега: найти его или создать новый
       const tagPromises = tagNames.map(async (tagName) => {
         let tag = await Tag.findOne({ name: tagName })
         if (!tag) {
@@ -168,10 +154,9 @@ export const createCourse: AsyncRequestHandler<
         return tag._id
       })
 
-      tagIds = (await Promise.all(tagPromises)) as mongoose.Types.ObjectId[]
+      tagIds = (await Promise.all(tagPromises)) as Types.ObjectId[]
     }
 
-    // Создаем новый курс
     const newCourse = await Course.create({
       title,
       slug,
@@ -200,7 +185,6 @@ export const createCourse: AsyncRequestHandler<
   }
 }
 
-// Обновить курс
 export const updateCourse: AsyncRequestHandler<
   CourseParams,
   ApiResponse,
@@ -219,7 +203,6 @@ export const updateCourse: AsyncRequestHandler<
       return
     }
 
-    // Находим курс
     const course = await Course.findById(id)
 
     if (!course) {
@@ -230,7 +213,6 @@ export const updateCourse: AsyncRequestHandler<
       return
     }
 
-    // Проверяем, является ли пользователь автором курса
     if (course.author.toString() !== req.userId) {
       res.status(403).json({
         status: 'fail',
@@ -239,22 +221,18 @@ export const updateCourse: AsyncRequestHandler<
       return
     }
 
-    // Если загружено новое изображение, обрабатываем его
     let imagePath = course.image
     if (req.file) {
-      // Обработка изображения
       await processImage(req.file.path)
       imagePath = req.file.path
     }
 
-    // Обновляем slug, если изменился заголовок
     let slug = course.slug
     if (title && title !== course.title) {
       slug = slugify(title, { lower: true })
     }
 
-    // Обработка тегов, если они изменились
-    let tagIds: mongoose.Types.ObjectId[] = course.tags
+    let updatedTagIds: Types.ObjectId[] = course.tags
     if (tags) {
       const tagNames = JSON.parse(tags) as string[]
 
@@ -266,10 +244,9 @@ export const updateCourse: AsyncRequestHandler<
         return tag._id
       })
 
-      tagIds = (await Promise.all(tagPromises)) as mongoose.Types.ObjectId[]
+      updatedTagIds = (await Promise.all(tagPromises)) as Types.ObjectId[]
     }
 
-    // Обновляем курс
     const updatedCourse = await Course.findByIdAndUpdate(
       id,
       {
@@ -282,7 +259,7 @@ export const updateCourse: AsyncRequestHandler<
         category: category || course.category,
         level: level || course.level,
         published: published !== undefined ? published : course.published,
-        tags: tagIds,
+        tags: updatedTagIds,
       },
       { new: true, runValidators: true },
     )
@@ -304,7 +281,6 @@ export const updateCourse: AsyncRequestHandler<
   }
 }
 
-// Удалить курс
 export const deleteCourse: AsyncRequestHandler<
   CourseParams,
   ApiResponse
@@ -320,7 +296,6 @@ export const deleteCourse: AsyncRequestHandler<
       return
     }
 
-    // Находим курс
     const course = await Course.findById(id)
 
     if (!course) {
@@ -331,7 +306,6 @@ export const deleteCourse: AsyncRequestHandler<
       return
     }
 
-    // Проверяем, является ли пользователь автором курса
     if (course.author.toString() !== req.userId) {
       res.status(403).json({
         status: 'fail',
@@ -340,11 +314,9 @@ export const deleteCourse: AsyncRequestHandler<
       return
     }
 
-    // Удаляем курс
     await Course.findByIdAndDelete(id)
 
-    // Удаляем все связанные избранные записи
-    await Favorite.deleteMany({ course: id })
+    await FavoriteCourse.deleteMany({ course: id })
 
     res.status(204).json({
       status: 'success',
@@ -359,7 +331,6 @@ export const deleteCourse: AsyncRequestHandler<
   }
 }
 
-// Добавить курс в избранное
 export const addToFavorites: AsyncRequestHandler<
   CourseParams,
   ApiResponse
@@ -375,7 +346,6 @@ export const addToFavorites: AsyncRequestHandler<
       return
     }
 
-    // Проверяем, существует ли курс
     const course = await Course.findById(courseId)
 
     if (!course) {
@@ -386,8 +356,7 @@ export const addToFavorites: AsyncRequestHandler<
       return
     }
 
-    // Проверяем, не добавлен ли уже курс в избранное
-    const existingFavorite = await Favorite.findOne({
+    const existingFavorite = await FavoriteCourse.findOne({
       user: req.userId,
       course: courseId,
     })
@@ -400,8 +369,7 @@ export const addToFavorites: AsyncRequestHandler<
       return
     }
 
-    // Создаем новую запись в избранном
-    const favorite = await Favorite.create({
+    const favorite = await FavoriteCourse.create({
       user: req.userId,
       course: courseId,
     })
@@ -421,7 +389,6 @@ export const addToFavorites: AsyncRequestHandler<
   }
 }
 
-// Удалить курс из избранного
 export const removeFromFavorites: AsyncRequestHandler<
   CourseParams,
   ApiResponse
@@ -437,8 +404,7 @@ export const removeFromFavorites: AsyncRequestHandler<
       return
     }
 
-    // Удаляем запись из избранного
-    const result = await Favorite.findOneAndDelete({
+    const result = await FavoriteCourse.findOneAndDelete({
       user: req.userId,
       course: courseId,
     })
@@ -464,7 +430,6 @@ export const removeFromFavorites: AsyncRequestHandler<
   }
 }
 
-// Получить все избранные курсы пользователя
 export const getFavorites: AsyncRequestHandler<{}, ApiResponse> = async (
   req,
   res,
@@ -478,8 +443,7 @@ export const getFavorites: AsyncRequestHandler<{}, ApiResponse> = async (
       return
     }
 
-    // Находим все избранные курсы пользователя с информацией о курсах
-    const favorites = await Favorite.find({ user: req.userId }).populate({
+    const favorites = await FavoriteCourse.find({ user: req.userId }).populate({
       path: 'course',
       select: 'title description price image category level',
       populate: [

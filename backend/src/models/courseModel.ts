@@ -1,6 +1,6 @@
-import mongoose, { Document, Schema } from 'mongoose'
-
+import mongoose, { Document, Schema, Types } from 'mongoose'
 import slugify from 'slugify'
+import { COURSE_LEVELS, CourseLevel } from '../constants/courseLevel'
 
 interface ITag extends Document {
   name: string
@@ -13,11 +13,12 @@ interface ICourse extends Document {
   price: number
   image: string
   category: string
-  level: 'beginner' | 'intermediate' | 'advanced'
+  level: CourseLevel
   published: boolean
-  author: mongoose.Types.ObjectId
-  tags: mongoose.Types.ObjectId[]
+  author: Types.ObjectId
+  tags: Types.ObjectId[]
   createdAt: Date
+  updatedAt: Date
 }
 
 const TagSchema = new Schema<ITag>({
@@ -26,24 +27,27 @@ const TagSchema = new Schema<ITag>({
 
 const Tag = mongoose.model<ITag>('Tag', TagSchema)
 
-const CourseSchema = new Schema<ICourse>({
-  title: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
-  description: { type: String },
-  price: { type: Number, required: true },
-  image: { type: String, required: true },
-  category: { type: String, required: true },
-  level: {
-    type: String,
-    required: true,
-    enum: ['beginner', 'intermediate', 'advanced'],
-    default: 'beginner',
+const CourseSchema = new Schema<ICourse>(
+  {
+    title: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    image: { type: String },
+    category: { type: String, required: true },
+    level: {
+      type: String,
+      required: true,
+      enum: Object.values(COURSE_LEVELS),
+    },
+    published: { type: Boolean, default: false },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
   },
-  published: { type: Boolean, default: false },
-  author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
-  createdAt: { type: Date, default: Date.now },
-})
+  {
+    timestamps: true,
+  },
+)
 
 CourseSchema.pre('save', function (next) {
   if (this.isModified('title')) {
@@ -53,7 +57,5 @@ CourseSchema.pre('save', function (next) {
 })
 
 const Course = mongoose.model<ICourse>('Course', CourseSchema)
-
-
 
 export { Course, Tag, ICourse, ITag }
