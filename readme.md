@@ -31,3 +31,7 @@ cd backend  && yarn dev
 Build for production with `yarn build` in each part. Tests and lint run from `backend` (`yarn test`, `yarn lint`) and `frontend` (`yarn lint`).
 
 Editors: VSCode with Volar, ESLint and Prettier.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
