@@ -1,108 +1,33 @@
-# Информационный портал для образования (IPFE)
+# IPFE: education portal
 
-## О проекте
+A study portal I built to learn a two-part app end to end: Vue on the front, Express on the back, a MongoDB document store in between.
 
-IPFE - это современное веб-приложение, разработанное для образовательных целей. Проект построен с использованием Vue.js для фронтенда и Node.js с Express для бэкенда.
+## Stack
 
-## Технологический стек
+**Frontend:** Vue 3, TypeScript, Vite, Vue Router, Pinia, PrimeVue, PrimeFlex, PrimeIcons.
 
-### Frontend
+**Backend:** Node.js, Express, TypeScript, MongoDB with Mongoose, JWT for auth, Multer for uploads, Sharp for image processing.
 
-- Vue.js
-- TypeScript
-- Vite
-- Vue Router
-- Pinia
-- PrimeVue
-- PrimeFlex
-- PrimeIcons
-
-### Backend
-
-- Node.js
-- Express
-- TypeScript
-- MongoDB (Mongoose)
-- JWT для аутентификации
-- Multer для загрузки файлов
-- Sharp для обработки изображений
-
-## Структура проекта
+## Layout
 
 ```
 ipfe/
-├── frontend/          # Vue.js приложение
-├── backend/           # Express сервер
-└── package.json       # Корневой package.json с workspaces
+├── frontend/    Vue app
+├── backend/     Express API
+└── package.json workspaces root
 ```
 
-## Установка и запуск
+## Run
 
-### Предварительные требования
-
-- Node.js (версия 16 или выше)
-- Yarn
-- MongoDB
-
-### Установка зависимостей
+Needs Node.js 16 or newer, Yarn and a running MongoDB.
 
 ```bash
-# Установка всех зависимостей (frontend и backend)
-yarn install
+yarn install          # installs frontend and backend
+
+cd frontend && yarn dev
+cd backend  && yarn dev
 ```
 
-### Запуск в режиме разработки
+Build for production with `yarn build` in each part. Tests and lint run from `backend` (`yarn test`, `yarn lint`) and `frontend` (`yarn lint`).
 
-#### Frontend
-
-```bash
-cd frontend
-yarn dev
-```
-
-#### Backend
-
-```bash
-cd backend
-yarn dev
-```
-
-### Сборка для продакшена
-
-```bash
-# Frontend
-cd frontend
-yarn build
-
-# Backend
-cd backend
-yarn build
-```
-
-## Тестирование
-
-```bash
-# Запуск тестов backend
-cd backend
-yarn test
-```
-
-## Линтинг
-
-```bash
-# Frontend
-cd frontend
-yarn lint
-
-# Backend
-cd backend
-yarn lint
-```
-
-## Рекомендуемые настройки IDE
-
-- [VSCode](https://code.visualstudio.com/)
-- [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) для Vue.js
-- [ESLint](https://eslint.org/)
-- [Prettier](https://prettier.io/)
-
+Editors: VSCode with Volar, ESLint and Prettier.
